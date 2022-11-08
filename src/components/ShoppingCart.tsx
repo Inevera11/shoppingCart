@@ -1,7 +1,9 @@
 import React from "react";
 import { Offcanvas, Stack } from "react-bootstrap";
 import { useShoppingCart } from "../context/ShoppingCartContext";
+import { formatCurency } from "../utilities/formatCurency";
 import { CartItem } from "./CartItem";
+import storeItems from "../data/items.json";
 
 export const ShoppingCart = () => {
   const { closeCart, cartItems } = useShoppingCart();
@@ -13,13 +15,17 @@ export const ShoppingCart = () => {
       <Offcanvas.Body>
         <Stack gap={3}>
           {cartItems.map((item) => (
-            <CartItem
-              key={item.id}
-              //   id={item.id}
-              //   quantity={item.quantity}
-              {...item}
-            />
+            <CartItem key={item.id} {...item} />
           ))}
+          <div className="ms-auto fw-bold fs-5">
+            Total:{" "}
+            {formatCurency(
+              cartItems.reduce((total, cartItem) => {
+                const item = storeItems.find((i) => i.id === cartItem.id);
+                return total + (item?.price || 0) * cartItem.quantity;
+              }, 0)
+            )}
+          </div>
         </Stack>
       </Offcanvas.Body>
     </Offcanvas>
